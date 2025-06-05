@@ -1,0 +1,39 @@
+name: V2ray URL Processor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'  # 每小时执行一次
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 获取完整的提交历史，避免 push 失败
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install dependencies
+        run: pip install requests
+        
+      - name: Run Python script
+        run: python main.py
+        
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "clexm"  
+          git config --local user.email "870027893@qq.com"
+          
+          # 检查文件是否有更改
+          if [[ $(git status --porcelain data/List.txt) ]]; then
+            git add data/List.txt
+            git commit -m "Update List.txt"
+            git push
+          else
+            echo "No changes to commit"
+          fi
