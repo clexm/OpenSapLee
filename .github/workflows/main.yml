@@ -11,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 获取完整的提交历史，避免 push 失败
+          fetch-depth: 0  # 获取完整的提交历史
+          token: ${{ secrets.GITHUB_TOKEN }}  # 显式指定令牌
           
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -26,14 +27,27 @@ jobs:
         
       - name: Commit and push changes
         run: |
-          git config --local user.name "clexm"  
-          git config --local user.email "870027893@qq.com"
+          # 输出调试信息
+          echo "Current branch: $(git branch --show-current)"
+          echo "File status:"
+          git status
           
-          # 检查文件是否有更改
-          if [[ $(git status --porcelain data/List.txt) ]]; then
+          # 配置 Git 用户信息（使用全局配置确保生效）
+          git config --global user.name "clexm"
+          git config --global user.email "870027893@qq.com"
+          
+          # 更准确地检查文件内容是否有变更
+          if [[ -n $(git diff --name-only data/List.txt) ]]; then
+            echo "Changes detected in List.txt"
+            
+            # 添加、提交并推送变更
             git add data/List.txt
             git commit -m "Update List.txt"
-            git push
+            
+            # 指定推送的目标分支（重要！）
+            git push origin HEAD:${{ github.ref_name }}
+            
+            echo "Push completed successfully"
           else
             echo "No changes to commit"
           fi
