@@ -37,11 +37,11 @@ jobs:
           git config --global user.email "870027893@qq.com"
           
           # 更准确地检查文件内容是否有变更
-          if [[ -n $(git diff --name-only Data/List.txt) ]]; then
+          if [[ -n $(git diff --name-only Date/List.txt) ]]; then
             echo "Changes detected in List.txt"
             
             # 添加、提交并推送变更
-            git add data/List.txt
+            git add Date/List.txt
             git commit -m "Update List.txt"
             
             # 指定推送的目标分支（重要！）
