@@ -3,7 +3,7 @@ name: V2ray URL Processor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'  # 每小时执行一次
+    - cron: '0 */6 * * *'  # 每小时执行一次
 
 jobs:
   build:
