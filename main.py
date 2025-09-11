@@ -5,11 +5,12 @@ from urllib.parse import urlparse
 # 定义URL列表（可自行添加/删除VPN文件地址）
 urls = [
       "https://www.xrayvip.com/free.txt",
-      "https://ghproxy.net/https://raw.githubusercontent.com/chengaopan/AutoMergePublicNodes/master/list_raw.txt",
-      "https://ghproxy.net/https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
-      "https://ghproxy.net/https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
-      "https://ghproxy.net/https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
-      "https://ghproxy.net/https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt"
+      "https://raw.githubusercontent.com/chengaopan/AutoMergePublicNodes/master/list_raw.txt",
+      "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
+      "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
+      "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+      "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt"
+      "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v2"
 ]
 
 # 使用集合存储唯一行（自动去重）
