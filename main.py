@@ -9,9 +9,9 @@ urls = [
       "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
       "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
       "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
-      "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt"
-      "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v2"
-      "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt"
+      "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
+      "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v2",
+      "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
 ]
 
 # 使用集合存储唯一行（自动去重）
