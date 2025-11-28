@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 # 定义URL列表（可自行添加/删除VPN文件地址）
 urls = [
       "https://www.xrayvip.com/free.txt",
-      "https://raw.githubusercontent.com/chengaopan/AutoMergePublicNodes/master/list_raw.txt",
       "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
       "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
       "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
