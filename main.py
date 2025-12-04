@@ -18,25 +18,24 @@ urls = [
 # 有效节点协议（用于过滤）
 VALID_PROTOCOLS = ("vmess", "vless", "trojan", "ss")
 unique_nodes = set()
-
 # --------------------- 核心函数：JSON转vmess链接 ---------------------
 def vmess_json_to_link(vmess_dict):
     """将VMESS配置字典转为vmess://链接"""
     # 标准化VMESS字段（避免缺失字段导致解析失败）
     vmess_info = {
         "v": "2",
-        "ps": vmess_dict.get("ps", "未命名节点"),  // 节点名称
-        "add": vmess_dict.get("add", ""),         // 服务器地址
-        "port": str(vmess_dict.get("port", "")),  // 端口
-        "id": vmess_dict.get("id", ""),           // 用户ID
-        "aid": str(vmess_dict.get("aid", "0")),   // alterId
-        "net": vmess_dict.get("net", "tcp"),      // 传输协议
-        "type": vmess_dict.get("type", "none"),   // 伪装类型
-        "host": vmess_dict.get("host", ""),       // 主机头
-        "path": vmess_dict.get("path", ""),       // 路径
-        "tls": vmess_dict.get("tls", ""),         // TLS
-        "sni": vmess_dict.get("sni", ""),         // SNI
-        "alpn": vmess_dict.get("alpn", "")        // ALPN
+        "ps": vmess_dict.get("ps", "未命名节点"),  
+        "add": vmess_dict.get("add", ""),         
+        "port": str(vmess_dict.get("port", "")),  
+        "id": vmess_dict.get("id", ""),
+        "aid": str(vmess_dict.get("aid", "0")),
+        "net": vmess_dict.get("net", "tcp"),
+        "type": vmess_dict.get("type", "none"),
+        "host": vmess_dict.get("host", ""),
+        "path": vmess_dict.get("path", ""),
+        "tls": vmess_dict.get("tls", ""),
+        "sni": vmess_dict.get("sni", ""),
+        "alpn": vmess_dict.get("alpn", "")
     }
     # 过滤空值
     vmess_info = {k: v for k, v in vmess_info.items() if v}
