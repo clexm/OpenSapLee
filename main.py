@@ -34,7 +34,7 @@ for url in urls:
 
 # 排序并拼接内容（非http链接优先）
 sorted_lines = sorted(unique_lines, key=lambda x: (x.startswith("http"), x))
-combined_content = "\n".join([line + "," for line in sorted_lines]) + "\n"
+combined_content = "\n".join([line + ";" for line in sorted_lines]) + "\n"
 
 # --------------------- 文件存储逻辑 ---------------------
 # 创建Date文件夹（位于脚本所在目录）
