@@ -34,7 +34,7 @@ for url in urls:
 
 # 排序并拼接内容（非http链接优先）
 sorted_lines = sorted(unique_lines, key=lambda x: (x.startswith("http"), x))
- combined_content = "\n".join([line + "," for line in sorted_lines[:-1]] + [sorted_lines[-1]]) + "\n"
+combined_content = "\n".join([line + "," for line in sorted_lines[:-1]] + [sorted_lines[-1]]) + "\n"
 else:
     combined_content = ""
 
