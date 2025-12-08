@@ -1,66 +1,44 @@
-name: V2ray URL Processor
+name: Update V2ray
 
+# 每6小时执行一次，同时允许手动触发
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 */2 * * *'  # 每6小时执行（注释修正）
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
 
 jobs:
-  build:
+  merge_subscribe:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4  # 升级到最新版
+      # 1️⃣ Checkout 仓库
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ 安装 Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'  # 指定稳定版本
-          
+          python-version: "3.11"
+
+      # 3️⃣ 安装依赖
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests urllib3
-          
-      - name: Run Python script
-        run: |
-          # 打印工作目录和文件列表（调试）
-          pwd
-          ls -la
-          # 运行脚本并保留输出
-          python main.py
-          
+          pip install aiohttp
+
+      # 4️⃣ 运行合并脚本
+      - name: Run merge_subscribe.py
+        run: python merge_subscribe.py
+
+      # 5️⃣ 提交并推送变化
       - name: Commit and push changes
         run: |
-          # 完整的调试信息
-          echo "=== Git Status ==="
-          git status
-          echo "=== List Date directory ==="
-          ls -la Date/ || echo "Date directory not found"
-          echo "=== Check List.txt ==="
-          cat Date/List.txt || echo "List.txt not found"
-          
-          # 配置Git
-          git config --global user.name "clexm"
-          git config --global user.email "870027893@qq.com"
-          
-          # 修复：检测文件是否存在 + 内容是否变更
-          if [ -f "Date/List.txt" ]; then
-            # 检查是否有变更（包括新文件）
-            if git add Date/List.txt && git diff --cached --quiet; then
-              echo "No changes to List.txt"
-            else
-              echo "Changes detected, committing..."
-              git commit -m "Update List.txt - $(date +'%Y-%m-%d %H:%M:%S')"
-              # 安全推送（指定分支）
-              git push origin "${{ github.ref_name }}"
-              echo "Push successful"
-            fi
-          else
-            echo "List.txt does not exist, skipping commit"
-          fi
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add Date/List.txt
+          git commit -m "Update merged List.txt" || echo "No changes to commit"
+          git push
         env:
+          # 自动使用默认 GITHUB_TOKEN 推送
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
