@@ -26,6 +26,7 @@ SUBSCRIBE_URLS = [
     "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
     "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v2",
     "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
+    "https://www.xrayvip.com/free.txt",
 ]
 
 TIMEOUT = aiohttp.ClientTimeout(total=20)
