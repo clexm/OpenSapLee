@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-"""
-高级版订阅合并工具
-- 异步并发抓取
-- 智能 Base64 修复
-- 精准节点去重
-- 保留所有有效节点，避免漏掉
-- 日志清晰
-"""
-
-import os
-import json
-import asyncio
-import aiohttp
 import base64
-import traceback
+import requests
+import os
+import sys
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
-# ===================== 配置 =====================
-SUBSCRIBE_URLS = [
+# ===================== 核心配置 =====================
+SUBSCRIBE_RAW_URLS = [
     "https://www.xrayvip.com/free.txt",
     "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
     "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
@@ -28,126 +18,84 @@ SUBSCRIBE_URLS = [
     "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
 ]
 
-TIMEOUT = aiohttp.ClientTimeout(total=20)
+TIMEOUT = 15
+RETRY_TIMES = 3
 
 # ===================== 工具函数 =====================
+def init_request_session():
+    session = requests.Session()
+    retry_strategy = Retry(
+        total=RETRY_TIMES,
+        backoff_factor=0.5,
+        allowed_methods=["GET"],
+        status_forcelist=[429, 500, 502, 503, 504]
+    )
+    adapter = HTTPAdapter(max_retries=retry_strategy)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
 
-def safe_b64decode(text: str) -> str:
-    """安全 Base64 解码，失败直接返回原文"""
-    text = text.strip()
-    if not text:
-        return ""
-    padding = len(text) % 4
-    if padding:
-        text += "=" * (4 - padding)
+def download_and_decode_sub(session, url):
     try:
-        return base64.b64decode(text).decode("utf-8", errors="ignore")
-    except Exception:
-        return text
+        response = session.get(url, timeout=TIMEOUT, allow_redirects=True)
+        response.raise_for_status()
+        
+        raw_content = response.text.strip()
+        if not raw_content:
+            return []
+        
+        padding = len(raw_content) % 4
+        if padding != 0:
+            raw_content += "=" * (4 - padding)
+        
+        try:
+            decoded_content = base64.b64decode(raw_content).decode("utf-8", errors="ignore")
+        except base64.binascii.Error:
+            decoded_content = raw_content
+        
+        nodes = [node.strip() for node in decoded_content.split() if node.strip()]
+        return nodes
+    except Exception as e:
+        print(f"Error processing {url}: {str(e)}", file=sys.stderr)
+        return []
 
+# ===================== 核心逻辑 =====================
+def merge_all_subs():
+    # 强制打印工作目录（调试关键）
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Script directory: {os.path.dirname(os.path.abspath(__file__))}")
+    
+    session = init_request_session()
+    all_unique_nodes = set()
+    
+    for url in SUBSCRIBE_RAW_URLS:
+        nodes = download_and_decode_sub(session, url)
+        if nodes:
+            all_unique_nodes.update(nodes)
+    
+    print(f"Total unique nodes found: {len(all_unique_nodes)}")
+    
+    if not all_unique_nodes:
+        print("No valid nodes found, exiting...")
+        return
+    
+    # 生成最终内容
+    merged_nodes_text = "\n".join(all_unique_nodes)
+    final_base64 = base64.b64encode(merged_nodes_text.encode("utf-8")).decode("utf-8")
 
-def get_node_key(node: str) -> str:
-    """生成节点唯一 key，用于去重"""
-    try:
-        if node.startswith("vmess://"):
-            raw = safe_b64decode(node[8:])
-            data = json.loads(raw)
-            return "vmess_{add}_{port}_{id}_{net}".format(
-                add=data.get("add", ""),
-                port=data.get("port", ""),
-                id=data.get("id", ""),
-                net=data.get("net", "")
-            )
-        elif node.startswith("vless://"):
-            base = node.split("?")[0].replace("vless://", "")
-            uid, addr = base.split("@")
-            host, port = addr.split(":")
-            return f"vless_{host}_{port}_{uid}"
-        elif node.startswith("trojan://"):
-            base = node.split("?")[0].replace("trojan://", "")
-            pwd, addr = base.split("@")
-            host, port = addr.split(":")
-            return f"trojan_{host}_{port}_{pwd}"
-        elif node.startswith("ssr://"):
-            raw = safe_b64decode(node[6:])
-            base = raw.split("?")[0]
-            arr = base.split(":")
-            if len(arr) >= 5:
-                return f"ssr_{arr[0]}_{arr[1]}_{arr[2]}_{arr[3]}_{arr[4]}"
-        return node
-    except Exception:
-        return node
+    # 存储文件（你的逻辑）
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    date_dir = os.path.join(script_dir, "Date")
+    os.makedirs(date_dir, exist_ok=True)
+    output_file = os.path.join(date_dir, "List.txt")
+    
+    # 写入文件并打印路径
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(final_base64)
+    
+    print(f"File saved to: {output_file}")
+    print(f"File size: {os.path.getsize(output_file)} bytes")
 
-
-def extract_nodes(text: str):
-    """
-    从文本中提取所有有效节点
-    - 支持 Base64 或纯文本
-    - 节点可被空格或换行分隔
-    """
-    decoded = safe_b64decode(text)
-    nodes = []
-    for line in decoded.replace("\r", " ").split():
-        line = line.strip()
-        if line.startswith(("vmess://", "vless://", "trojan://", "ssr://")):
-            nodes.append(line)
-    return nodes
-
-
-# ===================== 异步抓取 =====================
-async def fetch(session, url):
-    try:
-        async with session.get(url) as resp:
-            text = await resp.text()
-            return text
-    except Exception:
-        traceback.print_exc()
-        return ""
-
-
-# ===================== 主流程 =====================
-async def merge_all():
-    print("开始异步抓取订阅...\n")
-
-    async with aiohttp.ClientSession(timeout=TIMEOUT) as session:
-        tasks = [fetch(session, url) for url in SUBSCRIBE_URLS]
-        contents = await asyncio.gather(*tasks)
-
-    all_nodes = []
-    for content in contents:
-        if not content:
-            continue
-        nodes = extract_nodes(content)
-        all_nodes.extend(nodes)
-
-    print(f"原始节点总数（合并后）：{len(all_nodes)}")
-
-    # 精准去重
-    dedup_map = {}
-    for node in all_nodes:
-        key = get_node_key(node)
-        if key not in dedup_map:
-            dedup_map[key] = node
-
-    final_nodes = list(dedup_map.values())
-    print(f"去重后节点总数：{len(final_nodes)}")
-
-    # 生成最终文本和 Base64
-    merged_text = "\n".join(final_nodes)
-    b64_output = base64.b64encode(merged_text.encode()).decode()
-
-    # 保存文件
-    output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Date")
-    os.makedirs(output_dir, exist_ok=True)
-    output_path = os.path.join(output_dir, "List.txt")
-
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(b64_output)
-
-    print(f"\n输出文件路径: {output_path}")
-    print(f"文件大小: {os.path.getsize(output_path)} bytes")
-
-
-# ===================== 启动入口 =====================
+# ===================== 关键：添加执行入口 =====================
 if __name__ == "__main__":
-    asyncio.run(merge_all())
+    merge_all_subs()
