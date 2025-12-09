@@ -66,21 +66,24 @@ def merge_all_subs():
     print(f"Script directory: {os.path.dirname(os.path.abspath(__file__))}")
     
     session = init_request_session()
-    all_unique_nodes = set()
+    # 改用列表存储所有节点（保留重复），而不是集合（自动去重）
+    all_nodes = []
     
     for url in SUBSCRIBE_RAW_URLS:
         nodes = download_and_decode_sub(session, url)
         if nodes:
-            all_unique_nodes.update(nodes)
+            # 直接追加所有节点，不做去重
+            all_nodes.extend(nodes)
+            print(f"Fetched {len(nodes)} nodes from {url}")
     
-    print(f"Total unique nodes found: {len(all_unique_nodes)}")
+    print(f"Total nodes collected (including duplicates): {len(all_nodes)}")
     
-    if not all_unique_nodes:
+    if not all_nodes:
         print("No valid nodes found, exiting...")
         return
     
-    # 生成最终内容
-    merged_nodes_text = "\n".join(all_unique_nodes)
+    # 生成最终内容（保留所有节点顺序和重复项）
+    merged_nodes_text = "\n".join(all_nodes)
     final_base64 = base64.b64encode(merged_nodes_text.encode("utf-8")).decode("utf-8")
 
     # 存储文件（你的逻辑）
