@@ -3,14 +3,15 @@ name: V2ray URL Processor
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */2 * * *'  # 每6小时执行（注释修正）
+    # 每天8点、10点、12点、14点、16点、18点、20点、22点、24点（0点）执行
+    - cron: '0 8-23/2 * * *'  
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4  # 升级到最新版
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -18,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'  # 指定稳定版本
+          python-version: '3.11'
           
       - name: Install dependencies
         run: |
