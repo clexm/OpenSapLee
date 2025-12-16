@@ -9,14 +9,6 @@ from urllib3.util.retry import Retry
 
 # ===================== 核心配置 =====================
 SUBSCRIBE_RAW_URLS = [
-    "https://www.xrayvip.com/free.txt",
-    "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
-    "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
-    "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
-    "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
-    "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v2",
-    "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
-    "http://59.33.33.157:18080/v2ray.txt",
     "https://github.com/shaoyouvip/free/blob/main/base64.txt"
 ]
 
