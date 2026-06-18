@@ -14,7 +14,7 @@ SUBSCRIBE_RAW_URLS = [
     "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
     "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
     "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
-    "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v202606122",
+    "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/v202606182",
     "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
     "http://59.33.33.157:18080/v2ray.txt",
     "https://github.com/chengaopan/AutoMergePublicNodes/blob/master/list.txt",
