@@ -9,17 +9,9 @@ from urllib3.util.retry import Retry
 
 # ===================== 核心配置 =====================
 SUBSCRIBE_RAW_URLS = [
-    "https://www.xrayvip.com/free.txt",
-    "https://raw.githubusercontent.com/ermaozi/get_subscribe/main/subscribe/v2ray.txt",
-    "https://raw.githubusercontent.com/aiboboxx/v2rayfree/main/v2",
-    "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
-    "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
-    "https://raw.githubusercontent.com/free-nodes/v2rayfree/main/sub",
+    "https://raw.githubusercontent.com/Barabama/FreeNodes/refs/heads/feat/ai-crawler-v2/nodes/nodev2ray.txt",
+    "https://raw.githubusercontent.com/shaoyouvip/free/refs/heads/main/base64.txt",
     "https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
-    "http://59.33.33.157:18080/v2ray.txt",
-    "https://github.com/chengaopan/AutoMergePublicNodes/blob/master/list.txt",
-    "https://ghfast.top/https://raw.githubusercontent.com/free18/v2ray/refs/heads/main/v.txt",
-    "https://raw.githubusercontent.com/shaoyouvip/free/main/base64.txt"
 ]
 
 # 仅这个链接的base64后面有时间戳，需要清理
